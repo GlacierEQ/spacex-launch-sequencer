@@ -12,10 +12,12 @@
 | Pair | Spiral | Role | Star |
 |------|--------|------|------|
 | `spacex_propulsion` | **omega** | Sequence / hold ops spiral | Propulsion awareness — chamber health feeds pad ops |
+| `launch_campaign` | **omega** | Campaign decision spiral | Launch campaign go/no-go — multi-star meta-spiral (flight + prop + ground) |
 
 ### How this accelerates its twin
 
 - **spacex_propulsion:** consumes Alpha output; returns severity/proof that refines Alpha.
+- **launch_campaign:** consumes Alpha output; returns severity/proof that refines Alpha.
 
 ## Runtime
 
