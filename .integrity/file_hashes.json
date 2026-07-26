@@ -1,0 +1,25 @@
+{
+  "repo": "spacex-launch-sequencer",
+  "algorithm": "sha256",
+  "file_count": 18,
+  "hashes": {
+    "README.md": "3020f591c1b51e40909a47fbcf0f44e624b92d19e3a5939f45827989feaeb281",
+    "EASTER_EGGS.md": "0c4fc58a6163b54497fc8327ec77f4293330eea4ba636e30db202836bd450900",
+    ".gitignore": "bdf5823fb39358309d859824c0bfe95e917594bd370372743c15fe08f55f98b2",
+    "AKOS.md": "eae48200ee1bf2ec3fe2f267668b1dd09bac66f3bd2e01420e5787413f247a07",
+    "AGENTS.md": "dfd8c0adcc1b0c4252b4230076b27833fb1d06f357401092aac00b7664e5c44b",
+    "HELIX_STRAND.md": "568989fd629c85ae1cee2105c5c93181626288725e653b7dc1bb735f6627ea41",
+    "mastermind_sidecar.py": "3f7150e98d7c7d1a4085aef2abe6020d16e2dde0c24db8fdf04d066e10e59eb2",
+    "SECURITY_AND_FLEET_OPS.md": "26141c0f07d95847d679de423ddb7bdee6f3e319d204383c89a58d6d3bb610c7",
+    "ISSUE_CONTRACT.md": "f3152c29c78850d608b3cf516d11dcc5330210e209819066fc7fb0a1d863110e",
+    "HELIX.md": "67c65c37098c6686d838655e21c38a099ccfc23b4a2923219865dd66beeebfed",
+    "tests/test_core.py": "7d1eb0a88150d7df6e9d29e4c51647994bf95c0e0303cd732c12232fe8e663c2",
+    "tests/test_sequencer.py": "12f4b2530b00503df74e0f7627bd12b66651cafef57a5813b9f9a546b1a876f2",
+    ".shadow/config.json": "34f40a43475b2f1173c6fd37eb1b17f12d049e2adfd6ca85e50ad4d1b79871bb",
+    ".github/workflows/ci.yml": "393542f8109cac2611d6ab41b8b062e6cc8be46894379568f15c0b7e2c1a639f",
+    "src/sequencer.py": "4eb2a41a8075076d92b9bbc8e8b82aab3fdc19abefcd36d3b243213efecfd825",
+    "src/omega/abort_controller.py": "f1ec17e35a28a4259d6acb803e7aa46baf1e95ebd688b6b0ab10589908c1ed8a",
+    "src/omega/probabilistic_abort.py": "ae980f09804dc9a9b01e7668945f274db2ceba520eab461cae11541a95a7fd05",
+    "src/alpha/countdown.py": "6a74c09835b17b8ff0ecd0fff169df298833a9d2f414716bfe5b9af2605706fd"
+  }
+}
