@@ -1,0 +1,31 @@
+{
+  "schema": "glaciereq.proof-receipt.v1",
+  "repository": "GlacierEQ/spacex-launch-sequencer",
+  "source_sha": "c5bfccb2c6e0bb4fe7898e22199437e97df93a49d708822dfae4369b01066c5e",
+  "proof_id": "elite-spacex-launch-sequencer-1786335149",
+  "environment": {
+    "python": "/Users/kcbflux/job-app/excellence/.venv-elite/bin/python",
+    "PYTHONPATH": "/Users/kcbflux/job-app/repos/spacex-launch-sequencer:/Users/kcbflux/job-app/repos/spacex-launch-sequencer/src",
+    "entry": "unittest"
+  },
+  "tests": [
+    "/Users/kcbflux/job-app/excellence/.venv-elite/bin/python -m unittest discover -s tests -v (x2)"
+  ],
+  "adversarial_tests": [
+    "tests/test_adversarial.py"
+  ],
+  "runtime": {
+    "operate": "scripts/operate.py (x2)",
+    "dual_run_ok": true,
+    "proof_dual_run_ok": true
+  },
+  "result": "PASS",
+  "limitations": [
+    "not production deployed",
+    "reference implementation only"
+  ],
+  "timestamp": "2026-08-10T04:12Z",
+  "artifact_hashes": {
+    "operability_receipt": "628916bf1f198dd516d2522a6dde5dbba9fab5de784eb6c53f1b82ba65af556f"
+  }
+}

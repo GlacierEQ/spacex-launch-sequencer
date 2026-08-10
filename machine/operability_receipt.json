@@ -1,0 +1,27 @@
+{
+  "schema": "glaciereq.operability-receipt.v1",
+  "repository": "GlacierEQ/spacex-launch-sequencer",
+  "at": "2026-08-10T04:12Z",
+  "source_sha": "c5bfccb2c6e0bb4fe7898e22199437e97df93a49d708822dfae4369b01066c5e",
+  "entry": "scripts/operate.py",
+  "primary_output": {
+    "module": "sequencer",
+    "ok": true,
+    "repository": "GlacierEQ/spacex-launch-sequencer",
+    "smoke": {
+      "args": [],
+      "content_checked": true,
+      "invoked": true,
+      "kind": "class",
+      "method": "advance",
+      "module_local": true,
+      "name": "Sequencer",
+      "result": {
+        "ok": true,
+        "stage": "T-CHECKS"
+      }
+    }
+  },
+  "dual_run_ok": true,
+  "result": "PASS"
+}

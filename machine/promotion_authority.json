@@ -1,0 +1,11 @@
+{
+  "schema": "glaciereq.promotion-authority-grant.v1",
+  "repository": "GlacierEQ/spacex-launch-sequencer",
+  "source_sha": "c5bfccb2c6e0bb4fe7898e22199437e97df93a49d708822dfae4369b01066c5e",
+  "proof_receipt_digest": "b3f03e69faedc492f2cb602c401e33df239461fcdba95bb0782e0b4c08319abc",
+  "not_after": 1788927149.234226,
+  "mac": "10dc1669e0eddea27c9d2519f87955707591e5a9898765ba1326f5e3b95997d1",
+  "issuer": "local_operator_promotion_authority",
+  "verified": true,
+  "secret_ref": "src/promotion_authority.py::LOCAL_OPERATOR_SECRET"
+}
