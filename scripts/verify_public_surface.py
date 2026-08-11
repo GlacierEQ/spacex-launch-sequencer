@@ -17,19 +17,23 @@ def main() -> None:
     go_countdown = read("src/countdown_timer.go")
     capabilities = json.loads(read("machine/capabilities.json"))
     target = json.loads(read("machine/target-contract.json"))
+    excellence = json.loads(read("machine/excellence-state.json"))
 
     assert TOKEN in readme
     assert TOKEN in python_countdown
     assert TOKEN in go_countdown
     assert target["evidence_token"] == TOKEN
+    assert excellence["evidence_token"] == TOKEN
     assert "not affiliated with, endorsed by" in readme
     assert "SpaceX Launch Director" not in readme
     assert "sub-millisecond" not in readme.lower()
     assert "Fully wired into APEX Highway mesh" not in readme
     assert "real-time countdown state for orchestrator agents" not in readme
     assert "hyper-scaling" not in capabilities["capabilities"]
+    assert "HYPER_VALIDATED" not in json.dumps(excellence, sort_keys=True)
     assert target["current"]["deployed"] is False
     assert target["verified_capability"] == "deterministic-local-countdown-orchestration"
+    assert excellence["principal_state"] == "TESTED"
 
     print(TOKEN)
 
