@@ -18,13 +18,13 @@ from alpha.countdown import (
 
 
 def test_countdown_uses_duration_not_wall_clock_epoch() -> None:
-    sequencer = LaunchSequencer(t0=0.08)
-    assert sequencer.t_minus == 0.08
+    sequencer = LaunchSequencer(t0=1.0)
+    assert sequencer.t_minus == 1.0
     assert sequencer.start() is True
     first = sequencer.t_minus
     time.sleep(0.01)
     second = sequencer.t_minus
-    assert 0.0 < second < first <= 0.08
+    assert 0.0 < second < first <= 1.0
 
 
 def test_hold_freezes_countdown_and_resume_continues() -> None:
@@ -69,3 +69,32 @@ def test_required_step_failure_aborts_without_exception_text() -> None:
     assert step.error == "check_error"
     assert "sensitive handler detail" not in str(sequencer.event_log)
     assert result["evidence_state"] == EVIDENCE_STATE
+
+
+def test_callback_failure_cannot_erase_event_or_break_state_transition() -> None:
+    sequencer = LaunchSequencer(t0=1.0)
+
+    def broken_callback(_: dict) -> None:
+        raise RuntimeError("observer detail")
+
+    sequencer.on("countdown_started", broken_callback)
+    assert sequencer.start() is True
+    assert sequencer.state == CountdownState.COUNTING
+    rendered = str(sequencer.event_log)
+    assert "countdown_started" in rendered
+    assert "callback_failed" in rendered
+    assert "observer detail" not in rendered
+
+
+def test_liftoff_uses_post_check_t_minus_without_extra_tick() -> None:
+    sequencer = LaunchSequencer(t0=0.02)
+
+    def slow_success() -> bool:
+        time.sleep(0.03)
+        return True
+
+    sequencer.add_step(CountdownStep("slow", t_minus=0.02, check=slow_success))
+    sequencer.start()
+    result = sequencer.tick()
+    assert result["state"] == "LIFTOFF"
+    assert result["t_minus"] <= 0
