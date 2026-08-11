@@ -26,7 +26,8 @@ def main() -> None:
     assert excellence["evidence_token"] == TOKEN
     assert "not affiliated with, endorsed by" in readme
     assert "SpaceX Launch Director" not in readme
-    assert "sub-millisecond" not in readme.lower()
+    assert "high-precision launch countdown timer" not in readme.lower()
+    assert "with goroutine-per-milestone scheduling and sub-millisecond jitter" not in readme.lower()
     assert "Fully wired into APEX Highway mesh" not in readme
     assert "real-time countdown state for orchestrator agents" not in readme
     assert "hyper-scaling" not in capabilities["capabilities"]
