@@ -154,7 +154,8 @@ func (ct *CountdownTimer) Hold(reason string) {
 	fmt.Printf("[HOLD #%d] %s at T%s\n", ct.holdCount, reason, ct.tMinusLocked())
 }
 
-// Resume shifts the target time by the duration spent on hold.
+// Resume shifts the target time by the duration spent on hold and makes any
+// critical milestone that initiated the hold eligible for a bounded retry.
 func (ct *CountdownTimer) Resume() {
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
@@ -166,42 +167,64 @@ func (ct *CountdownTimer) Resume() {
 	ct.holdStarted = time.Time{}
 	ct.holdActive = false
 	ct.phase = "COUNTING"
+	for _, milestone := range ct.milestones {
+		if milestone.Status == StatusHold {
+			milestone.Status = StatusPending
+		}
+	}
 }
 
-// ExecuteNextMilestone runs the next pending due milestone.
+// ExecuteNextMilestone runs the next pending due milestone. The user-supplied
+// handler executes outside the timer lock so it may safely query or update the
+// timer through public methods without deadlocking.
 func (ct *CountdownTimer) ExecuteNextMilestone() (*Milestone, error) {
 	ct.mu.Lock()
-	defer ct.mu.Unlock()
-
 	if ct.holdActive || ct.aborted {
-		return nil, fmt.Errorf("countdown %s", ct.phase)
+		phase := ct.phase
+		ct.mu.Unlock()
+		return nil, fmt.Errorf("countdown %s", phase)
 	}
 
 	tMinus := ct.tMinusLocked()
+	var selected *Milestone
 	for _, milestone := range ct.milestones {
 		if milestone.Status != StatusPending || tMinus > milestone.TMinus {
 			continue
 		}
 		milestone.Status = StatusActive
-		if milestone.Handler != nil {
-			if err := milestone.Handler(); err != nil {
-				if milestone.Critical {
-					ct.holdActive = true
-					ct.holdStarted = time.Now()
-					ct.holdCount++
-					ct.phase = "HOLD"
-					milestone.Status = StatusHold
-					return milestone, fmt.Errorf("critical milestone failed: %s", milestone.Name)
-				}
-				milestone.Status = StatusSkipped
-				return milestone, nil
-			}
-		}
-		milestone.Status = StatusComplete
-		milestone.CompletedAt = time.Now()
-		return milestone, nil
+		selected = milestone
+		break
 	}
-	return nil, nil
+	ct.mu.Unlock()
+
+	if selected == nil {
+		return nil, nil
+	}
+
+	var handlerErr error
+	if selected.Handler != nil {
+		handlerErr = selected.Handler()
+	}
+
+	ct.mu.Lock()
+	defer ct.mu.Unlock()
+
+	if handlerErr != nil {
+		if selected.Critical {
+			ct.holdActive = true
+			ct.holdStarted = time.Now()
+			ct.holdCount++
+			ct.phase = "HOLD"
+			selected.Status = StatusHold
+			return selected, fmt.Errorf("critical milestone failed: %s", selected.Name)
+		}
+		selected.Status = StatusSkipped
+		return selected, fmt.Errorf("optional milestone failed: %s", selected.Name)
+	}
+
+	selected.Status = StatusComplete
+	selected.CompletedAt = time.Now()
+	return selected, nil
 }
 
 // Stats returns current local countdown state without benchmark claims.
