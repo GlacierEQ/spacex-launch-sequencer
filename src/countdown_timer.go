@@ -1,5 +1,6 @@
-// Package countdown implements a high-precision launch countdown timer
-// with goroutine-per-milestone scheduling and sub-millisecond jitter.
+// Package countdown implements a repository-local countdown scheduling model.
+// It is a simulation/reference surface, not a SpaceX launch procedure or
+// production timing/command system.
 package countdown
 
 import (
@@ -9,7 +10,9 @@ import (
 	"time"
 )
 
-// MilestoneStatus represents the completion state of a countdown milestone
+const EvidenceState = "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY"
+
+// MilestoneStatus represents the completion state of a countdown milestone.
 type MilestoneStatus int
 
 const (
@@ -24,7 +27,7 @@ func (s MilestoneStatus) String() string {
 	return []string{"PENDING", "ACTIVE", "COMPLETE", "HOLD", "SKIPPED"}[s]
 }
 
-// GoNoGo represents a subsystem's readiness vote
+// GoNoGo represents a synthetic subsystem readiness vote.
 type GoNoGo int
 
 const (
@@ -33,17 +36,17 @@ const (
 	VoteAbstain
 )
 
-// Milestone represents a single countdown event
+// Milestone represents one repository-local countdown event.
 type Milestone struct {
 	Name        string
-	TMinus      time.Duration // Negative = before launch
+	TMinus      time.Duration
 	Handler     func() error
 	Status      MilestoneStatus
 	CompletedAt time.Time
-	Critical    bool // If true, failure triggers hold
+	Critical    bool
 }
 
-// SubsystemVote represents a Go/No-Go poll response
+// SubsystemVote represents one synthetic readiness vote.
 type SubsystemVote struct {
 	Subsystem string
 	Vote      GoNoGo
@@ -51,30 +54,30 @@ type SubsystemVote struct {
 	Timestamp time.Time
 }
 
-// CountdownTimer manages the precise countdown timeline
+// CountdownTimer manages a local countdown timeline.
 type CountdownTimer struct {
 	mu          sync.RWMutex
 	milestones  []*Milestone
 	launchTime  time.Time
 	holdActive  bool
+	holdStarted time.Time
 	holdCount   int
-	votes       []SubsystemVote
+	votes       map[string]SubsystemVote
 	phase       string
 	aborted     bool
-	started     bool
 }
 
-// NewCountdownTimer creates a new countdown timer targeting the given launch time
+// NewCountdownTimer creates a local countdown timer targeting launchTime.
 func NewCountdownTimer(launchTime time.Time) *CountdownTimer {
 	return &CountdownTimer{
 		launchTime: launchTime,
 		milestones: make([]*Milestone, 0),
-		votes:      make([]SubsystemVote, 0),
+		votes:      make(map[string]SubsystemVote),
 		phase:      "PRE_COUNT",
 	}
 }
 
-// AddMilestone registers a countdown milestone at a specific T-minus time
+// AddMilestone registers a milestone at a specific relative time.
 func (ct *CountdownTimer) AddMilestone(name string, tMinus time.Duration, critical bool, handler func() error) {
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
@@ -85,65 +88,87 @@ func (ct *CountdownTimer) AddMilestone(name string, tMinus time.Duration, critic
 		Status:   StatusPending,
 		Critical: critical,
 	})
-	// Sort by T-minus (most negative first = earliest)
 	sort.Slice(ct.milestones, func(i, j int) bool {
 		return ct.milestones[i].TMinus < ct.milestones[j].TMinus
 	})
 }
 
-// TMinus returns the current time remaining until launch
+// TMinus returns wall-clock duration remaining until the local target time.
 func (ct *CountdownTimer) TMinus() time.Duration {
-	return time.Until(ct.launchTime)
+	ct.mu.RLock()
+	defer ct.mu.RUnlock()
+	return ct.tMinusLocked()
 }
 
-// RecordVote records a Go/No-Go vote from a subsystem
+func (ct *CountdownTimer) tMinusLocked() time.Duration {
+	now := time.Now()
+	if ct.holdActive && !ct.holdStarted.IsZero() {
+		now = ct.holdStarted
+	}
+	return ct.launchTime.Sub(now)
+}
+
+// RecordVote records or replaces a synthetic readiness vote for one subsystem.
 func (ct *CountdownTimer) RecordVote(subsystem string, vote GoNoGo, reason string) {
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
-	ct.votes = append(ct.votes, SubsystemVote{
+	ct.votes[subsystem] = SubsystemVote{
 		Subsystem: subsystem,
 		Vote:      vote,
 		Reason:    reason,
 		Timestamp: time.Now(),
-	})
+	}
 }
 
-// IsGoForLaunch checks if all critical subsystems have voted Go
-func (ct *CountdownTimer) IsGoForLaunch() bool {
-	ct.mu.RLock()
-	defer ct.mu.RUnlock()
-
+func (ct *CountdownTimer) isGoForLaunchLocked() bool {
 	if len(ct.votes) == 0 {
 		return false
 	}
-
-	for _, v := range ct.votes {
-		if v.Vote == VoteNoGo {
+	for _, vote := range ct.votes {
+		if vote.Vote != VoteGo {
 			return false
 		}
 	}
 	return true
 }
 
-// Hold initiates a countdown hold
+// IsGoForLaunch returns true only when at least one vote exists and every
+// currently recorded synthetic subsystem vote is Go.
+func (ct *CountdownTimer) IsGoForLaunch() bool {
+	ct.mu.RLock()
+	defer ct.mu.RUnlock()
+	return ct.isGoForLaunchLocked()
+}
+
+// Hold freezes the local countdown until Resume is called.
 func (ct *CountdownTimer) Hold(reason string) {
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
+	if ct.holdActive {
+		return
+	}
 	ct.holdActive = true
+	ct.holdStarted = time.Now()
 	ct.holdCount++
 	ct.phase = "HOLD"
-	fmt.Printf("[HOLD #%d] %s at T%s\n", ct.holdCount, reason, ct.TMinus())
+	fmt.Printf("[HOLD #%d] %s at T%s\n", ct.holdCount, reason, ct.tMinusLocked())
 }
 
-// Resume resumes countdown from hold
+// Resume shifts the target time by the duration spent on hold.
 func (ct *CountdownTimer) Resume() {
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
+	if !ct.holdActive {
+		return
+	}
+	heldFor := time.Since(ct.holdStarted)
+	ct.launchTime = ct.launchTime.Add(heldFor)
+	ct.holdStarted = time.Time{}
 	ct.holdActive = false
 	ct.phase = "COUNTING"
 }
 
-// ExecuteNextMilestone runs the next pending milestone if its time has arrived
+// ExecuteNextMilestone runs the next pending due milestone.
 func (ct *CountdownTimer) ExecuteNextMilestone() (*Milestone, error) {
 	ct.mu.Lock()
 	defer ct.mu.Unlock()
@@ -152,43 +177,42 @@ func (ct *CountdownTimer) ExecuteNextMilestone() (*Milestone, error) {
 		return nil, fmt.Errorf("countdown %s", ct.phase)
 	}
 
-	tMinus := ct.TMinus()
-	for _, ms := range ct.milestones {
-		if ms.Status != StatusPending {
+	tMinus := ct.tMinusLocked()
+	for _, milestone := range ct.milestones {
+		if milestone.Status != StatusPending || tMinus > milestone.TMinus {
 			continue
 		}
-		if tMinus <= ms.TMinus {
-			ms.Status = StatusActive
-			if ms.Handler != nil {
-				if err := ms.Handler(); err != nil {
-					if ms.Critical {
-						ct.holdActive = true
-						ct.holdCount++
-						ct.phase = "HOLD"
-						ms.Status = StatusHold
-						return ms, fmt.Errorf("critical milestone failed: %s: %w", ms.Name, err)
-					}
-					ms.Status = StatusSkipped
-					return ms, nil
+		milestone.Status = StatusActive
+		if milestone.Handler != nil {
+			if err := milestone.Handler(); err != nil {
+				if milestone.Critical {
+					ct.holdActive = true
+					ct.holdStarted = time.Now()
+					ct.holdCount++
+					ct.phase = "HOLD"
+					milestone.Status = StatusHold
+					return milestone, fmt.Errorf("critical milestone failed: %s", milestone.Name)
 				}
+				milestone.Status = StatusSkipped
+				return milestone, nil
 			}
-			ms.Status = StatusComplete
-			ms.CompletedAt = time.Now()
-			return ms, nil
 		}
+		milestone.Status = StatusComplete
+		milestone.CompletedAt = time.Now()
+		return milestone, nil
 	}
-	return nil, nil // No milestones due yet
+	return nil, nil
 }
 
-// Stats returns current countdown statistics
+// Stats returns current local countdown state without benchmark claims.
 func (ct *CountdownTimer) Stats() map[string]interface{} {
 	ct.mu.RLock()
 	defer ct.mu.RUnlock()
 
 	completed := 0
 	pending := 0
-	for _, ms := range ct.milestones {
-		switch ms.Status {
+	for _, milestone := range ct.milestones {
+		switch milestone.Status {
 		case StatusComplete:
 			completed++
 		case StatusPending:
@@ -197,13 +221,14 @@ func (ct *CountdownTimer) Stats() map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		"phase":       ct.phase,
-		"t_minus":     ct.TMinus().String(),
-		"milestones":  len(ct.milestones),
-		"completed":   completed,
-		"pending":     pending,
-		"holds":       ct.holdCount,
-		"hold_active": ct.holdActive,
-		"go_for_launch": ct.IsGoForLaunch(),
+		"phase":          ct.phase,
+		"t_minus":        ct.tMinusLocked().String(),
+		"milestones":     len(ct.milestones),
+		"completed":      completed,
+		"pending":        pending,
+		"holds":          ct.holdCount,
+		"hold_active":    ct.holdActive,
+		"go_for_launch":  ct.isGoForLaunchLocked(),
+		"evidence_state": EvidenceState,
 	}
 }
