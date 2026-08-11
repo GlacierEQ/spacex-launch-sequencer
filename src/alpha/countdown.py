@@ -1,14 +1,16 @@
-"""Launch countdown sequencer — state machine for automated countdown.
+"""Repository-local countdown state-machine laboratory.
 
-Manages T-minus timeline, step dependencies, and hold logic.
-Each step has a callable check, timeout, and abort trigger.
-Zero external dependencies.
+Manages a synthetic T-minus timeline, step dependencies, hold/resume accounting,
+and abort conditions. This is not a SpaceX, Falcon, Starship, or production
+launch procedure and has no external command authority.
 """
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Callable, Optional
+
+EVIDENCE_STATE = "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY"
 
 
 class CountdownState(Enum):
@@ -44,7 +46,7 @@ class CountdownStep:
     def elapsed(self) -> float:
         if self.started_at == 0:
             return 0.0
-        end = self.completed_at if self.completed_at > 0 else time.time()
+        end = self.completed_at if self.completed_at > 0 else time.monotonic()
         return end - self.started_at
 
 
@@ -60,10 +62,13 @@ class AbortCondition:
 
 class LaunchSequencer:
     def __init__(self, t0: float = 0.0):
-        self.t0 = t0
+        if t0 < 0:
+            raise ValueError("initial T-minus must be non-negative")
+        self.initial_t_minus = float(t0)
         self.state = CountdownState.IDLE
         self.steps: list[CountdownStep] = []
         self.abort_conditions: list[AbortCondition] = []
+        self._started_at: float = 0.0
         self._hold_start: float = 0.0
         self._hold_total: float = 0.0
         self._event_log: list[tuple[float, str]] = []
@@ -71,7 +76,7 @@ class LaunchSequencer:
 
     def add_step(self, step: CountdownStep):
         self.steps.append(step)
-        self.steps.sort(key=lambda s: s.t_minus, reverse=True)
+        self.steps.sort(key=lambda step: step.t_minus, reverse=True)
 
     def add_abort_condition(self, condition: AbortCondition):
         self.abort_conditions.append(condition)
@@ -80,37 +85,52 @@ class LaunchSequencer:
         self._callbacks.setdefault(event, []).append(callback)
 
     def _emit(self, event: str, data: dict):
-        for cb in self._callbacks.get(event, []):
-            cb(data)
-        self._event_log.append((time.time(), f"{event}: {data}"))
+        payload = {**data, "evidence_state": EVIDENCE_STATE}
+        self._event_log.append((time.time(), f"{event}: {payload}"))
+        for callback in self._callbacks.get(event, []):
+            try:
+                callback(payload)
+            except Exception:
+                self._event_log.append(
+                    (
+                        time.time(),
+                        f"callback_failed: {{'event': '{event}', 'evidence_state': '{EVIDENCE_STATE}'}}",
+                    )
+                )
 
     @property
     def t_minus(self) -> float:
-        if self.t0 == 0:
-            return 0.0
-        return self.t0 - (time.time() - self._hold_total)
+        if self._started_at == 0:
+            return self.initial_t_minus
+        now = self._hold_start if self.state == CountdownState.HOLDED else time.monotonic()
+        elapsed = max(0.0, now - self._started_at - self._hold_total)
+        return self.initial_t_minus - elapsed
 
     def start(self):
         if self.state != CountdownState.IDLE:
             return False
         self.state = CountdownState.COUNTING
-        self.t0 = time.time()
+        self._started_at = time.monotonic()
         self._hold_total = 0.0
-        self._emit("countdown_started", {"t0": self.t0})
+        self._hold_start = 0.0
+        self._emit("countdown_started", {"initial_t_minus": self.initial_t_minus})
         return True
 
     def hold(self) -> bool:
         if self.state != CountdownState.COUNTING:
             return False
+        self._hold_start = time.monotonic()
+        frozen = self.t_minus
         self.state = CountdownState.HOLDED
-        self._hold_start = time.time()
-        self._emit("hold", {"t_minus": self.t_minus})
+        self._emit("hold", {"t_minus": frozen})
         return True
 
     def resume(self) -> bool:
         if self.state != CountdownState.HOLDED:
             return False
-        self._hold_total += time.time() - self._hold_start
+        now = time.monotonic()
+        self._hold_total += now - self._hold_start
+        self._hold_start = 0.0
         self.state = CountdownState.COUNTING
         self._emit("resume", {"t_minus": self.t_minus})
         return True
@@ -123,80 +143,98 @@ class LaunchSequencer:
         return True
 
     def _check_aborts(self) -> Optional[AbortCondition]:
-        for ac in self.abort_conditions:
-            if not ac.triggered and ac.check():
-                ac.triggered = True
-                ac.trigger_time = time.time()
-                return ac
+        for condition in self.abort_conditions:
+            if condition.triggered:
+                continue
+            try:
+                triggered = condition.check()
+            except Exception:
+                triggered = True
+                condition.message = condition.message or "abort condition check failed"
+            if triggered:
+                condition.triggered = True
+                condition.trigger_time = time.time()
+                return condition
         return None
 
     def tick(self) -> dict:
         if self.state != CountdownState.COUNTING:
-            return {"state": self.state.name, "t_minus": self.t_minus}
+            return {
+                "state": self.state.name,
+                "t_minus": self.t_minus,
+                "evidence_state": EVIDENCE_STATE,
+            }
 
         triggered = self._check_aborts()
         if triggered:
             self.abort(f"auto: {triggered.name} - {triggered.message}")
-            return {"state": "ABORTED", "trigger": triggered.name}
+            return {
+                "state": "ABORTED",
+                "trigger": triggered.name,
+                "evidence_state": EVIDENCE_STATE,
+            }
 
-        current_t = self.t_minus
+        due_t = self.t_minus
         results = []
 
         for step in self.steps:
             if step.status != StepStatus.PENDING:
                 continue
-            if step.t_minus < current_t:
+            if step.t_minus < due_t:
                 continue
 
             step.status = StepStatus.RUNNING
-            step.started_at = time.time()
+            step.started_at = time.monotonic()
             self._emit("step_started", {"step": step.name})
 
             try:
                 passed = step.check()
-            except Exception as e:
+            except Exception:
                 passed = False
-                step.error = str(e)
+                step.error = "check_error"
 
             if passed:
                 step.status = StepStatus.PASSED
-                step.completed_at = time.time()
+                step.completed_at = time.monotonic()
                 self._emit("step_passed", {"step": step.name})
             else:
                 if step.required:
                     step.status = StepStatus.FAILED
                     self._emit("step_failed", {"step": step.name, "error": step.error})
-                    if not self.abort(f"step failed: {step.name}"):
-                        pass
+                    self.abort(f"step failed: {step.name}")
                 else:
                     step.status = StepStatus.SKIPPED
                     self._emit("step_skipped", {"step": step.name})
 
             results.append({"step": step.name, "status": step.status.name})
+            if self.state == CountdownState.ABORTED:
+                break
 
-        all_done = all(
-            s.status in (StepStatus.PASSED, StepStatus.SKIPPED)
-            for s in self.steps if s.required
+        current_t = self.t_minus
+        required = [step for step in self.steps if step.required]
+        all_done = bool(required) and all(
+            step.status == StepStatus.PASSED for step in required
         )
-        if all_done and current_t <= 0:
+        if all_done and current_t <= 0 and self.state == CountdownState.COUNTING:
             self.state = CountdownState.LIFTOFF
             self._emit("liftoff", {"time": time.time()})
 
         return {
             "state": self.state.name,
-            "t_minus": round(current_t, 3),
+            "t_minus": round(self.t_minus, 3),
             "steps": results,
+            "evidence_state": EVIDENCE_STATE,
         }
 
     def get_timeline(self) -> list[dict]:
         return [
             {
-                "name": s.name,
-                "t_minus": s.t_minus,
-                "required": s.required,
-                "status": s.status.name,
+                "name": step.name,
+                "t_minus": step.t_minus,
+                "required": step.required,
+                "status": step.status.name,
             }
-            for s in self.steps
+            for step in self.steps
         ]
 
     @property

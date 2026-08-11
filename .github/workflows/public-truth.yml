@@ -1,8 +1,8 @@
-name: CI
+name: Public Countdown Truth Gate
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -10,7 +10,10 @@ permissions:
   contents: read
 
 jobs:
-  ci:
+  verify:
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -20,9 +23,19 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          expected="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git cat-file -e "${{ github.event.pull_request.base.sha }}^{commit}"
+            git merge-base --is-ancestor "${{ github.event.pull_request.base.sha }}" HEAD
+          fi
+
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
-          python-version: "3.13"
+          python-version: ${{ matrix.python-version }}
           check-latest: false
 
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
@@ -31,6 +44,5 @@ jobs:
           check-latest: false
           cache: false
 
-      - name: Verify repository-owned mixed-language surface
-        shell: bash
+      - name: Verify countdown simulation boundary
         run: bash scripts/ci/verify.sh

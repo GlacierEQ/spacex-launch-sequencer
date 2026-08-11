@@ -2,21 +2,26 @@
   "schema": "glaciereq.repo-target-contract.v1",
   "identity": {
     "repository_id": "GlacierEQ/spacex-launch-sequencer",
-    "family": "elite-estate"
+    "family": "synthetic-countdown-orchestration"
   },
   "current": {
-    "state": "PROMOTED",
+    "state": "TESTED",
     "implemented": true,
     "tested": true,
     "deployed": false
   },
+  "verified_capability": "deterministic-local-countdown-orchestration",
+  "evidence_token": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
   "nonclaims": [
-    "no employer affiliation",
-    "no production deployment without receipt"
+    "no SpaceX affiliation or proprietary launch procedure knowledge",
+    "no vehicle or launch command authority",
+    "no sub-millisecond or production real-time guarantee",
+    "no live weather, telemetry, MCP, provider, APEX, AKOS, or Mastermind runtime integration",
+    "no production deployment without external receipt"
   ],
   "donor_plan": {
     "mode": "none",
     "donors": []
   },
-  "frozen_at": "2026-08-10T04:12Z"
+  "truth_hardened_at": "2026-08-10T20:05:00-10:00"
 }

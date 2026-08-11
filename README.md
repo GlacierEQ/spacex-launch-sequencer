@@ -1,83 +1,108 @@
-# SpaceX Launch Sequencer — Automated Countdown & Hold Management 🚀
+# SpaceX Launch Sequencer — Synthetic Countdown Orchestration Laboratory
 
-> **Deterministic state-machine countdown sequencer with automated hold/recycle and Go/No-Go polling.**
+**A repository-local countdown state machine with milestone ordering, hold/resume accounting, readiness votes, required-step failure handling, and fail-closed abort conditions.**
 
-[![Python](https://img.shields.io/badge/Python-3.9+-blue)]()
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8)]()
-[![Domain](https://img.shields.io/badge/Domain-Launch%20Operations-red)]()
+> **Independence / non-affiliation:** This is an independent GlacierEQ engineering portfolio project. It is not affiliated with, endorsed by, or based on private launch procedures, countdown timelines, flight rules, command systems, or data from SpaceX. The repository name describes a portfolio target/domain exercise, not provenance or launch authority.
 
----
+**Canonical branch:** `main`  
+**Current evidence state:** `LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY`
 
-## 🎯 For Recruiters & Hiring Managers
+## Recruiter view
 
-This repository implements an **automated launch countdown sequencer** — the orchestration software that manages the precise timeline of events from T-45:00 through liftoff. It demonstrates:
+The verified value is deterministic orchestration under time and dependency constraints—not a claim to run a real launch countdown.
 
-- **Deterministic state machines** with strict temporal ordering guarantees
-- **Automated Go/No-Go polling** across dozens of subsystems with consensus logic
-- **Hold and recycle management** with configurable recycle windows and abort criteria
-- **Event-driven architecture** with sub-second timing precision for critical milestones
+This repository demonstrates:
 
-**Why this matters**: Launch sequencing is a masterclass in **orchestration under constraints** — the same discipline used in manufacturing automation, surgical robotics, and financial settlement systems where timing, ordering, and consensus are non-negotiable.
+- a Python T-minus state machine with monotonic countdown accounting;
+- hold/resume behavior that freezes rather than silently consuming countdown time;
+- required-step ordering and fail-closed abort behavior;
+- synthetic readiness-vote handling;
+- a Go countdown model with milestone scheduling, hold-time target shifting, vote replacement by subsystem, and lock-safe statistics;
+- repository-native Python and Go tests plus cold-start operability checks.
 
----
+These mechanisms transfer to deployment cutovers, manufacturing automation, incident runbooks, settlement workflows, staged migrations, and other operations where ordered gates and holds matter.
 
-## 🔬 For Engineers & Technical Reviewers
+## Engineering anatomy
 
-### Countdown Timeline
-
-```
-T-45:00  Prop systems pressurization begins
-T-35:00  LOX loading begins
-T-16:00  RP-1/CH4 loading begins
-T-07:00  Engine chill sequence
-T-05:00  SpaceX Launch Director poll
-T-01:00  Flight computer to startup config
-T-00:45  SpaceX Launch Director final Go
-T-00:03  Engine ignition sequence
-T-00:00  LIFTOFF — clamp release
-```
-
-### Core Components
-
-| Component | Language | Purpose |
+| Surface | Verified role | Boundary |
 |---|---|---|
-| `src/sequencer_engine.py` | Python | Countdown FSM, milestone management, Go/No-Go logic |
-| `src/countdown_timer.go` | Go | High-precision timer with goroutine-per-milestone scheduling |
-| `tests/` | Python | Deterministic countdown simulation with hold/recycle scenarios |
+| `src/alpha/countdown.py` | canonical Python countdown state machine | local synthetic timeline only |
+| `src/countdown_timer.go` | Go countdown/milestone model | local scheduler, no precision benchmark claim |
+| `src/omega/abort_controller.py` | additional abort-control experiment | not launch-certified safety logic |
+| `src/omega/probabilistic_abort.py` | probabilistic decision experiment | simulation/research surface only |
+| `tests/test_countdown_truth.py` | Python clock/hold/fail-closed proof | local deterministic fixtures |
+| `src/countdown_timer_test.go` | Go hold/vote/lock-safety proof | local deterministic fixtures |
+| `scripts/operate.py` | cold-start repository operability | not production operation |
 
-### Key Design
+## Corrected countdown semantics
 
-- **Go for timing**: `time.NewTicker` with goroutine scheduling achieves <1ms jitter
-- **Consensus polling**: Quorum-based Go/No-Go with configurable veto authority
-- **Idempotent transitions**: Every state change is logged and replayable
+The Python sequencer now treats `t0` as a **duration in seconds**, not as a wall-clock epoch. It uses `time.monotonic()` for elapsed-time accounting. Holds freeze `t_minus`; resume continues from the frozen point.
 
----
+The Go timer similarly freezes time while held and shifts its target time forward by the hold duration on resume. Its readiness vote map replaces stale votes from the same synthetic subsystem instead of accumulating contradictory historical votes forever.
 
-## 🤖 ML/AI & Programmatic Mesh Integration
-
-### Agent Mesh Connectivity
-
-- **MCP Tool**: `countdown_status()` — real-time countdown state for orchestrator agents
-- **Mastermind Sidecar**: Publishes milestone events to APEX Highway mesh
-- **SHA-256 Integrity**: `.integrity/file_hashes.json` cryptographic verification
-
-### AI/ML Extension Points
-
-- **Weather Window Optimization**: ML model predicts optimal launch windows from forecast ensembles
-- **Hold Prediction**: Classification model predicts hold probability from pre-launch telemetry
-- **Anomaly Detection**: Unsupervised clustering on countdown telemetry for early fault detection
-
-```python
-# Agent mesh query
-status = await mcp_client.call_tool("launch-sequencer", "countdown_status")
-# Returns: {"t_minus_s": 120, "phase": "TERMINAL_COUNT", "holds": 0, "go_nogo": "GO"}
-```
-
----
-
-## ⚡ Quick Start
+## Native proof
 
 ```bash
-python3 src/sequencer_engine.py
-python3 tests/test_sequencer.py
+python -m pip install pytest
+python -m pytest -q tests
+python scripts/operate.py
+
+gofmt -w src/countdown_timer.go src/countdown_timer_test.go
+go vet ./...
+go test ./...
+
+bash scripts/ci/verify.sh
+```
+
+The Public Countdown Truth Gate runs repository-owned verification on the exact pull-request head or canonical push SHA.
+
+## Evidence boundary
+
+`LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY`
+
+A green repository workflow does **not** establish:
+
+- SpaceX affiliation, employment, endorsement, private system access, or operational knowledge;
+- official T-minus milestones, launch director procedures, Falcon/Starship flight rules, clamp/engine/fueling procedures, or proprietary timing sequences;
+- launch command authority, vehicle command execution, or safety certification;
+- sub-millisecond timer jitter;
+- production real-time guarantees;
+- dozens-of-subsystems quorum behavior beyond the repository's tested synthetic vote model;
+- live weather/telemetry/vehicle/MCP/provider integrations;
+- live Mastermind, APEX, AKOS, or other GlacierEQ mesh connectivity;
+- deployed production reliability, latency, scale, or availability;
+- ML weather-window, hold-prediction, or anomaly-detection capability merely because they are architectural extension ideas.
+
+## Historical / aspirational surfaces
+
+Older notes and topology files may contain company-specific timelines, production-performance language, mesh claims, AI extension ideas, or operational terminology. Those surfaces are retained as history/architecture unless current exact-head native proof explicitly promotes a claim. The README and current public truth gate define the public evidence boundary.
+
+## Machine entrypoint
+
+```yaml
+schema: glaciereq.readme.v1
+repository: GlacierEQ/spacex-launch-sequencer
+canonical_branch: main
+purpose: >-
+  Demonstrate deterministic local countdown orchestration with hold/resume,
+  milestone ordering, synthetic readiness votes, required-step failure handling,
+  and fail-closed abort behavior.
+status:
+  state: LOCAL_OPERABLE
+  evidence_level: TEST
+  evidence_token: LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY
+verified_surfaces:
+  - Python monotonic T-minus accounting
+  - hold/resume freeze behavior
+  - required-step and abort-condition fail-closed behavior
+  - Go hold target shifting
+  - Go subsystem vote replacement
+  - lock-safe Go stats
+  - cold-start local operability
+blocked_scope:
+  - SpaceX affiliation or proprietary launch procedures
+  - launch or vehicle command authority
+  - production real-time performance guarantees
+  - live weather/telemetry/MCP/provider/mesh integrations
+  - ML extension ideas without implementation and proof
 ```
