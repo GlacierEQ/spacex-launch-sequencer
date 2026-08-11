@@ -86,9 +86,17 @@ class LaunchSequencer:
 
     def _emit(self, event: str, data: dict):
         payload = {**data, "evidence_state": EVIDENCE_STATE}
-        for callback in self._callbacks.get(event, []):
-            callback(payload)
         self._event_log.append((time.time(), f"{event}: {payload}"))
+        for callback in self._callbacks.get(event, []):
+            try:
+                callback(payload)
+            except Exception:
+                self._event_log.append(
+                    (
+                        time.time(),
+                        f"callback_failed: {{'event': '{event}', 'evidence_state': '{EVIDENCE_STATE}'}}",
+                    )
+                )
 
     @property
     def t_minus(self) -> float:
@@ -166,13 +174,13 @@ class LaunchSequencer:
                 "evidence_state": EVIDENCE_STATE,
             }
 
-        current_t = self.t_minus
+        due_t = self.t_minus
         results = []
 
         for step in self.steps:
             if step.status != StepStatus.PENDING:
                 continue
-            if step.t_minus < current_t:
+            if step.t_minus < due_t:
                 continue
 
             step.status = StepStatus.RUNNING
@@ -202,6 +210,7 @@ class LaunchSequencer:
             if self.state == CountdownState.ABORTED:
                 break
 
+        current_t = self.t_minus
         required = [step for step in self.steps if step.required]
         all_done = bool(required) and all(
             step.status == StepStatus.PASSED for step in required
@@ -212,7 +221,7 @@ class LaunchSequencer:
 
         return {
             "state": self.state.name,
-            "t_minus": round(current_t, 3),
+            "t_minus": round(self.t_minus, 3),
             "steps": results,
             "evidence_state": EVIDENCE_STATE,
         }
