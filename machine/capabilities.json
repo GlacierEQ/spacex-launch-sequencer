@@ -1,1 +1,10 @@
-{"capabilities": ["hyper-scaling"]}
+{
+  "capabilities": [
+    "monotonic-countdown-state-machine",
+    "hold-resume-time-accounting",
+    "milestone-ordering",
+    "synthetic-readiness-vote-model",
+    "fail-closed-abort-handling",
+    "go-countdown-lock-safety"
+  ]
+}
