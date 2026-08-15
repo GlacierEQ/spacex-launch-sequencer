@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import time
 from pathlib import Path
@@ -15,6 +16,12 @@ from alpha.countdown import (
     LaunchSequencer,
     StepStatus,
 )
+
+TOKEN = "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY"
+
+
+def load(path: str) -> dict:
+    return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 
 def test_countdown_uses_duration_not_wall_clock_epoch() -> None:
@@ -98,3 +105,42 @@ def test_liftoff_uses_post_check_t_minus_without_extra_tick() -> None:
     result = sequencer.tick()
     assert result["state"] == "LIFTOFF"
     assert result["t_minus"] <= 0
+
+
+def test_machine_projection_matches_evidence_without_erasing_target() -> None:
+    target = load("machine/target-contract.json")
+    planes = load("machine/capability-planes.json")
+    excellence = load("machine/excellence-state.json")
+
+    evidence = target["evidence_checkpoint"]
+    assert evidence["evidence_token"] == TOKEN
+    assert evidence["verified_capability"] == "deterministic-local-countdown-orchestration"
+    assert evidence["canonical_proof_head"] == "f931665de0d91b3a5a52748a30a76716d65bbe0a"
+    assert target["implementation_checkpoint"]["deployed"] is False
+    assert target["target_architecture"]["status"] == "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE"
+    assert len(target["target_architecture"]["objectives"]) >= 8
+
+    assert planes["projection"]["projection_may_overwrite_canonical_or_target"] is False
+    assert planes["target"]["status"] == "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE"
+    states = {item["state"] for item in planes["target"]["items"]}
+    assert "UNVERIFIED_TARGET" in states
+    assert "PARTIALLY_IMPLEMENTED_TARGET" in states
+
+    assert excellence["product_state"] == "FUNCTIONAL_LOCAL_COUNTDOWN_ORCHESTRATOR"
+    assert excellence["evidence_state"] == "EXACT_HEAD_VERIFIED"
+    assert excellence["projection_state"] == TOKEN
+    assert excellence["target_state"] == "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE"
+    assert excellence["evidence_checkpoint"]["head_sha"] == "f931665de0d91b3a5a52748a30a76716d65bbe0a"
+
+
+def test_historical_ambitions_survive_only_as_target_state() -> None:
+    planes = load("machine/capability-planes.json")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    targets = {item["capability"]: item for item in planes["target"]["items"]}
+    assert targets["timing-jitter and real-time scheduling benchmark research"]["state"] == "UNVERIFIED_TARGET"
+    assert targets["weather-window optimization research"]["state"] == "UNVERIFIED_TARGET"
+    assert targets["hold-risk prediction research"]["state"] == "UNVERIFIED_TARGET"
+    assert targets["programmatic countdown-status service"]["state"] == "UNVERIFIED_TARGET"
+    assert "SpaceX Launch Director" not in readme
+    assert "sub-millisecond jitter" not in readme.lower()
+    assert "real-time countdown state for orchestrator agents" not in readme
