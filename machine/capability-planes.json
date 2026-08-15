@@ -1,0 +1,94 @@
+{
+  "schema": "glaciereq.repository-capability-planes.v1",
+  "repository": "GlacierEQ/spacex-launch-sequencer",
+  "governance_authority": {
+    "repository": "GlacierEQ/AKOS",
+    "canonical_commit": "09660d20fe1cfe03de169ce327cbe0e86f054e63",
+    "contract": "governance/projection_non_interference.v1.json"
+  },
+  "provenance": {
+    "pre_truth_hardening_head": "f817ae5d9005e4253fb547d98796ce81ced2b313",
+    "truth_hardening_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+    "current_parent_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+    "historical_intent_source": "README.md@f817ae5d9005e4253fb547d98796ce81ced2b313",
+    "rule": "historical launch-specific claims are not restored as current facts; transferable orchestration ambitions survive as explicitly non-authoritative target state"
+  },
+  "canonical": {
+    "identity": "deterministic countdown and constrained-workflow orchestration engineering laboratory",
+    "original_intent": [
+      "strictly ordered countdown and milestone execution",
+      "go/no-go consensus and veto policy research",
+      "hold recycle retry and abort orchestration",
+      "timing and scheduling precision research",
+      "predictive hold and anomaly-analysis extensions",
+      "programmatic countdown status service",
+      "governed milestone-event publication"
+    ],
+    "non_affiliation": "independent GlacierEQ portfolio system; no SpaceX affiliation, proprietary launch procedure access, vehicle command authority, or launch authority"
+  },
+  "implementation": {
+    "status": "FUNCTIONAL_LOCAL_COUNTDOWN_ORCHESTRATOR",
+    "implemented_capabilities": [
+      "monotonic-countdown-state-machine",
+      "hold-resume-time-accounting",
+      "milestone-ordering",
+      "synthetic-readiness-vote-model",
+      "fail-closed-abort-handling",
+      "go-countdown-lock-safety",
+      "callback-failure-isolation",
+      "required-optional-step-failure-semantics",
+      "handler-reentrancy-protection"
+    ],
+    "experimental_or_partial": [
+      "probabilistic abort/hold analysis modules remain research surfaces rather than validated operational prediction",
+      "mastermind_sidecar.py remains an integration scaffold rather than proof of live mesh connectivity",
+      "promotion-authority machinery is local governance logic, not launch authority"
+    ],
+    "source_paths": [
+      "src/alpha/countdown.py",
+      "src/countdown_timer.go",
+      "src/omega/abort_controller.py",
+      "src/omega/probabilistic_abort.py",
+      "src/promotion_authority.py",
+      "mastermind_sidecar.py"
+    ]
+  },
+  "evidence": {
+    "evidence_token": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
+    "verified_capability": "deterministic-local-countdown-orchestration",
+    "canonical_proof_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+    "proof_receipts": [
+      {"kind": "github_actions", "name": "CI", "id": 31532650434, "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a", "conclusion": "success"},
+      {"kind": "github_actions", "name": "Public Countdown Truth Gate", "id": 31532650465, "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a", "conclusion": "success"}
+    ],
+    "rule": "evidence defines current projection claimability; it does not replace canonical orchestration identity or future research targets"
+  },
+  "projection": {
+    "public_claim_ceiling": "local deterministic countdown simulation and constrained-workflow orchestration with synthetic readiness voting, holds, retries, ordered milestones and fail-closed abort behavior",
+    "public_readme": "README.md",
+    "projection_may_omit_unverified_target_state": true,
+    "projection_may_overwrite_canonical_or_target": false,
+    "nonclaims": [
+      "no SpaceX procedure knowledge or affiliation",
+      "no vehicle launch or range command authority",
+      "no sub-millisecond or production real-time guarantee",
+      "no validated weather-window hold-risk or anomaly prediction",
+      "no live weather telemetry MCP provider APEX AKOS Mastermind or agent-mesh runtime integration",
+      "no production deployment or safety certification"
+    ]
+  },
+  "target": {
+    "status": "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE",
+    "items": [
+      {"capability": "larger multi-subsystem countdown orchestration", "origin": "historical README", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "current synthetic voting and milestone engine is a base; broader subsystem orchestration remains a target"},
+      {"capability": "configurable go-no-go consensus quorum and veto policies", "origin": "historical README", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "current synthetic readiness model is a base; generalized policy composition remains a target"},
+      {"capability": "timing-jitter and real-time scheduling benchmark research", "origin": "historical sub-millisecond claim", "state": "UNVERIFIED_TARGET", "note": "historical sub-millisecond guarantee is not restored; reproducible jitter benchmarking is the proper target"},
+      {"capability": "weather-window optimization research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future research target using reproducible public or synthetic forecast data"},
+      {"capability": "hold-risk prediction research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future benchmarked classification target; no current probability claim"},
+      {"capability": "countdown anomaly-detection research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future reproducible anomaly-analysis target"},
+      {"capability": "programmatic countdown-status service", "origin": "historical MCP tool intent", "state": "UNVERIFIED_TARGET", "note": "generic governed service target; no current live MCP integration"},
+      {"capability": "governed milestone-event publication into an orchestration mesh", "origin": "historical Mastermind/APEX intent", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "sidecar scaffold exists, but live mesh connectivity remains unverified target state"}
+    ],
+    "rule": "targets advance only through implementation and evidence; lack of proof may narrow projection but may not erase the target"
+  }
+}
