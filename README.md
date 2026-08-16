@@ -1,5 +1,9 @@
 # SpaceX Launch Sequencer — Synthetic Countdown Orchestration Laboratory
 
+> **APEX dual-plane recovery:** verified lab proof remains `LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY` (not SpaceX flight authority). Implemented software planes are restored as first-class capabilities under MAXIMUM_COHERENT_ADVANCE — governance routes power; it does not amputate it.
+
+**Implemented planes:** probabilistic-abort-research-plane, multi-language-countdown-timer-go, abort-controller-orchestration, milestone-event-integration-hooks
+
 **A repository-local countdown state machine with milestone ordering, hold/resume accounting, readiness votes, required-step failure handling, and fail-closed abort conditions.**
 
 > **Independence / non-affiliation:** This is an independent GlacierEQ engineering portfolio project. It is not affiliated with, endorsed by, or based on private launch procedures, countdown timelines, flight rules, command systems, or data from SpaceX. The repository name describes a portfolio target/domain exercise, not provenance or launch authority.
