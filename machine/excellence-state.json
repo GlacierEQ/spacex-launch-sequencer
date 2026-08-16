@@ -7,27 +7,68 @@
   "projection_state": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
   "target_state": "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE",
   "state_planes_ref": "machine/capability-planes.json",
-  "verified_capability": "deterministic-local-countdown-orchestration",
+  "verified_capability": "deterministic-countdown-state-machine",
   "evidence_token": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
   "evidence_checkpoint": {
     "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
     "workflow_receipts": [
-      {"name": "CI", "id": 31532650434, "conclusion": "success"},
-      {"name": "Public Countdown Truth Gate", "id": 31532650465, "conclusion": "success"}
+      {
+        "name": "CI",
+        "id": 31532650434,
+        "conclusion": "success"
+      },
+      {
+        "name": "Public Countdown Truth Gate",
+        "id": 31532650465,
+        "conclusion": "success"
+      }
     ]
   },
   "gates": {
-    "IDENTITY_RESOLVED": {"status": "PASS", "evidence": "github GlacierEQ/spacex-launch-sequencer"},
-    "TARGET_CONTRACT_FROZEN": {"status": "PASS", "evidence": "machine/target-contract.json preserves target architecture separately from current proof"},
-    "CENTRAL_MECHANISM_PRESENT": {"status": "PASS", "evidence": "Python countdown FSM and Go timer plus abort/retry/readiness machinery"},
-    "DETERMINISTIC_PROOF_GREEN": {"status": "PASS", "evidence": "CI 31532650434 and Public Countdown Truth Gate 31532650465 on exact f931665de0d91b3a5a52748a30a76716d65bbe0a"},
-    "ADVERSARIAL_SURVIVAL": {"status": "PASS", "evidence": "repository-owned hold retry callback reentrancy stale-timing and optional-failure regressions"},
-    "OPERABLE_AND_OBSERVABLE": {"status": "PASS", "evidence": "scripts/operate.py and repository-native Python/Go verification"},
-    "PROOF_RECEIPT_BOUND": {"status": "PASS", "evidence": "exact-head GitHub Actions receipts are bound to evidence state"},
-    "AUTHORITY_BOUND": {"status": "PASS", "evidence": "local countdown simulation authority is explicitly not vehicle launch command or range authority"},
-    "PROJECTION_TRUTH_CLOSED": {"status": "PASS", "evidence": "Public Countdown Truth Gate 31532650465"},
-    "CANONICAL_POSITION_RESOLVED": {"status": "PENDING", "evidence": "estate-level canonical position remains separately governed"},
-    "EVOLUTION_CURSOR_DEFINED": {"status": "PASS", "evidence": "advance preserved orchestration and research targets without replacing current exact-head evidence"}
+    "IDENTITY_RESOLVED": {
+      "status": "PASS",
+      "evidence": "github GlacierEQ/spacex-launch-sequencer"
+    },
+    "TARGET_CONTRACT_FROZEN": {
+      "status": "PASS",
+      "evidence": "machine/target-contract.json preserves target architecture separately from current proof"
+    },
+    "CENTRAL_MECHANISM_PRESENT": {
+      "status": "PASS",
+      "evidence": "Python countdown FSM and Go timer plus abort/retry/readiness machinery"
+    },
+    "DETERMINISTIC_PROOF_GREEN": {
+      "status": "PASS",
+      "evidence": "CI 31532650434 and Public Countdown Truth Gate 31532650465 on exact f931665de0d91b3a5a52748a30a76716d65bbe0a"
+    },
+    "ADVERSARIAL_SURVIVAL": {
+      "status": "PASS",
+      "evidence": "repository-owned hold retry callback reentrancy stale-timing and optional-failure regressions"
+    },
+    "OPERABLE_AND_OBSERVABLE": {
+      "status": "PASS",
+      "evidence": "scripts/operate.py and repository-native Python/Go verification"
+    },
+    "PROOF_RECEIPT_BOUND": {
+      "status": "PASS",
+      "evidence": "exact-head GitHub Actions receipts are bound to evidence state"
+    },
+    "AUTHORITY_BOUND": {
+      "status": "PASS",
+      "evidence": "local countdown simulation authority is explicitly not vehicle launch command or range authority"
+    },
+    "PROJECTION_TRUTH_CLOSED": {
+      "status": "PASS",
+      "evidence": "Public Countdown Truth Gate 31532650465"
+    },
+    "CANONICAL_POSITION_RESOLVED": {
+      "status": "PENDING",
+      "evidence": "estate-level canonical position remains separately governed"
+    },
+    "EVOLUTION_CURSOR_DEFINED": {
+      "status": "PASS",
+      "evidence": "advance preserved orchestration and research targets without replacing current exact-head evidence"
+    }
   },
   "nonclaims": [
     "no SpaceX procedure knowledge or affiliation",
@@ -43,5 +84,20 @@
   "supersedes": {
     "single_axis_principal_state": "TESTED",
     "reason": "TESTED represented an evidence/projection checkpoint and incorrectly replaced product maturity and target state"
+  },
+  "implemented_capabilities": [
+    "probabilistic-abort-research-plane",
+    "multi-language-countdown-timer-go",
+    "abort-controller-orchestration",
+    "milestone-event-integration-hooks"
+  ],
+  "current": {
+    "deployed": false
+  },
+  "recovery": {
+    "identity": "APEX_IS_THE_COUNTER_TO_CANONICAL_DESTRUCTION",
+    "incident": "ESTATE_CAPABILITY_NEUTRALIZATION_2026-08-15",
+    "law": "MAXIMUM_COHERENT_ADVANCE",
+    "action": "dual-plane power routing \u2014 expand implemented surface without false SpaceX/flight claims"
   }
 }

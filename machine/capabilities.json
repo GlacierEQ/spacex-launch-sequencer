@@ -5,6 +5,33 @@
     "milestone-ordering",
     "synthetic-readiness-vote-model",
     "fail-closed-abort-handling",
-    "go-countdown-lock-safety"
-  ]
+    "go-countdown-lock-safety",
+    "deterministic-countdown-state-machine",
+    "hold-resume-timeline",
+    "probabilistic-abort-research-plane",
+    "multi-language-countdown-timer-go",
+    "abort-controller-orchestration",
+    "milestone-event-integration-hooks"
+  ],
+  "evidence_token": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
+  "planes": {
+    "verified": [
+      "deterministic-countdown-state-machine",
+      "hold-resume-timeline",
+      "synthetic-readiness-vote-model"
+    ],
+    "implemented": [
+      "probabilistic-abort-research-plane",
+      "multi-language-countdown-timer-go",
+      "abort-controller-orchestration",
+      "milestone-event-integration-hooks"
+    ],
+    "rule": "verified claims stay honest; implemented power is not deleted to protect claims"
+  },
+  "recovery": {
+    "identity": "APEX_IS_THE_COUNTER_TO_CANONICAL_DESTRUCTION",
+    "incident": "ESTATE_CAPABILITY_NEUTRALIZATION_2026-08-15",
+    "law": "MAXIMUM_COHERENT_ADVANCE",
+    "action": "dual-plane power routing \u2014 expand implemented surface without false SpaceX/flight claims"
+  }
 }
