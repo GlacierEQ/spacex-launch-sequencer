@@ -1,14 +1,13 @@
 {
-  "schema": "glaciereq.repo-target-contract.v2",
-  "identity": {
-    "repository_id": "GlacierEQ/spacex-launch-sequencer",
-    "canonical_identity": "deterministic countdown and constrained-workflow orchestration engineering laboratory",
-    "non_affiliation": "independent GlacierEQ portfolio system; no SpaceX affiliation, proprietary launch procedure access, vehicle command authority, or launch authority"
-  },
-  "authority": {
-    "projection_non_interference": "GlacierEQ/AKOS@09660d20fe1cfe03de169ce327cbe0e86f054e63/governance/projection_non_interference.v1.json",
-    "capability_planes": "machine/capability-planes.json",
-    "rule": "the target contract preserves future orchestration architecture; exact proof constrains public projection without replacing the target"
+  "schema": "glaciereq.repo-target-contract.v4",
+  "repository": "GlacierEQ/spacex-launch-sequencer",
+  "identity": "deterministic countdown and constrained-workflow orchestration engineering laboratory",
+  "non_affiliation": "independent GlacierEQ portfolio system; no SpaceX affiliation, proprietary launch procedure access, vehicle command authority, or launch authority",
+  "apex": {
+    "contract": "GlacierEQ/AKOS/governance/apex_projection_evolution.v2.json@main",
+    "capability_graph": "machine/capability-planes.json",
+    "selection_mode": "CURRENT_BEST_REVISABLE",
+    "rule": "current implementation is selected per capability, remains challengeable, and may be replaced or composed when stronger verified engineering appears"
   },
   "implementation_checkpoint": {
     "state": "FUNCTIONAL_LOCAL_COUNTDOWN_ORCHESTRATOR",
@@ -19,11 +18,11 @@
   "evidence_checkpoint": {
     "verified_capability": "deterministic-local-countdown-orchestration",
     "evidence_token": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
-    "canonical_proof_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+    "verified_checkpoint_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
     "claim_ceiling_applies_to": "projection"
   },
   "target_architecture": {
-    "status": "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE",
+    "status": "ACTIVE_FRONTIER",
     "source": "machine/capability-planes.json#target",
     "objectives": [
       "scale the current local state machine into broader multi-subsystem constrained-workflow orchestration",
@@ -32,17 +31,17 @@
       "evaluate weather-window optimization against reproducible public or synthetic forecast data",
       "evaluate hold-risk prediction against labeled synthetic or open benchmark data",
       "develop reproducible countdown anomaly-detection experiments",
-      "expose a governed programmatic countdown-status service",
-      "publish bounded milestone events into a governed orchestration or agent integration plane"
+      "expose a programmatic countdown-status service",
+      "publish bounded milestone events into an orchestration or agent integration plane"
     ],
-    "promotion_rule": "each target remains target state until implementation and source-bound evidence exist; historical SpaceX procedure and performance claims are not revived"
+    "advance_rule": "each objective remains visible until implementation and source-bound evidence support it, a stronger objective replaces it, or explicit capability-loss accounting justifies retirement"
   },
   "nonclaims": [
     "no SpaceX procedure knowledge or affiliation",
     "no vehicle launch or range command authority",
     "no sub-millisecond or production real-time guarantee",
     "no validated weather-window hold-risk or anomaly prediction",
-    "no live weather telemetry MCP provider APEX AKOS Mastermind or agent-mesh runtime integration",
+    "no live weather telemetry provider, APEX, AKOS, Mastermind, or agent-mesh runtime integration",
     "no production deployment or safety certification"
   ]
 }
