@@ -4,12 +4,12 @@
 
 > **Independence / non-affiliation:** This is an independent GlacierEQ engineering portfolio project. It is not affiliated with, endorsed by, or based on private launch procedures, countdown timelines, flight rules, command systems, or data from SpaceX. The repository name describes a portfolio target/domain exercise, not provenance or launch authority.
 
-**Canonical branch:** `main`  
+**Selected branch:** `main`  
 **Current evidence state:** `LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY`
 
 ## Recruiter view
 
-The verified value is deterministic orchestration under time and dependency constraints—not a claim to run a real launch countdown.
+The verified value is deterministic orchestration under time and dependency constraints, not a claim to run a real launch countdown.
 
 This repository demonstrates:
 
@@ -26,17 +26,18 @@ These mechanisms transfer to deployment cutovers, manufacturing automation, inci
 
 | Surface | Verified role | Boundary |
 |---|---|---|
-| `src/alpha/countdown.py` | canonical Python countdown state machine | local synthetic timeline only |
-| `src/countdown_timer.go` | Go countdown/milestone model | local scheduler, no precision benchmark claim |
+| `src/alpha/countdown.py` | selected Python countdown state machine | local synthetic timeline only |
+| `src/countdown_timer.go` | Go countdown/milestone model and capability donor | local scheduler, no precision benchmark claim |
 | `src/omega/abort_controller.py` | additional abort-control experiment | not launch-certified safety logic |
-| `src/omega/probabilistic_abort.py` | probabilistic decision experiment | simulation/research surface only |
+| `src/omega/probabilistic_abort.py` | probabilistic decision challenger/donor | simulation/research surface only |
 | `tests/test_countdown_truth.py` | Python clock/hold/fail-closed proof | local deterministic fixtures |
 | `src/countdown_timer_test.go` | Go hold/vote/lock-safety proof | local deterministic fixtures |
 | `scripts/operate.py` | cold-start repository operability | not production operation |
+| `machine/capability-planes.json` | APEX capability selections, challengers, donors, target frontier, evidence, and lineage | current selections remain revisable |
 
 ## Corrected countdown semantics
 
-The Python sequencer now treats `t0` as a **duration in seconds**, not as a wall-clock epoch. It uses `time.monotonic()` for elapsed-time accounting. Holds freeze `t_minus`; resume continues from the frozen point.
+The Python sequencer treats `t0` as a **duration in seconds**, not as a wall-clock epoch. It uses `time.monotonic()` for elapsed-time accounting. Holds freeze `t_minus`; resume continues from the frozen point.
 
 The Go timer similarly freezes time while held and shifts its target time forward by the hold duration on resume. Its readiness vote map replaces stale votes from the same synthetic subsystem instead of accumulating contradictory historical votes forever.
 
@@ -54,7 +55,11 @@ go test ./...
 bash scripts/ci/verify.sh
 ```
 
-The Public Countdown Truth Gate runs repository-owned verification on the exact pull-request head or canonical push SHA.
+The Public Countdown Truth Gate runs repository-owned verification on the exact pull-request head or reviewed push SHA.
+
+## APEX evolution
+
+Selection happens per capability. The Python state machine, Go timing surface, abort controller, probabilistic research, and integration scaffold can each be selected, challenged, or preserved as donors according to objective and evidence. Generalized readiness policies, timing benchmarks, hold-risk research, anomaly research, programmatic status, and event integration remain visible frontiers instead of disappearing because they exceed today's proof ceiling.
 
 ## Evidence boundary
 
@@ -75,14 +80,16 @@ A green repository workflow does **not** establish:
 
 ## Historical / aspirational surfaces
 
-Older notes and topology files may contain company-specific timelines, production-performance language, mesh claims, AI extension ideas, or operational terminology. Those surfaces are retained as history/architecture unless current exact-head native proof explicitly promotes a claim. The README and current public truth gate define the public evidence boundary.
+Older notes and topology files may contain company-specific timelines, production-performance language, mesh claims, AI extension ideas, or operational terminology. Those surfaces remain history or target-frontier inputs unless current source and evidence support a stronger capability selection. The README remains a public projection and does not control richer implementation or target state.
 
 ## Machine entrypoint
 
 ```yaml
-schema: glaciereq.readme.v1
+schema: glaciereq.readme.v2
 repository: GlacierEQ/spacex-launch-sequencer
-canonical_branch: main
+selected_branch: main
+selection_mode: CURRENT_BEST_REVISABLE
+capability_graph: machine/capability-planes.json
 purpose: >-
   Demonstrate deterministic local countdown orchestration with hold/resume,
   milestone ordering, synthetic readiness votes, required-step failure handling,
