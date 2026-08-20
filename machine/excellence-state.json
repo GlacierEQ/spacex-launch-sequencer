@@ -1,11 +1,13 @@
 {
-  "schema": "glaciereq.repo-excellence-state.v2",
+  "schema": "glaciereq.repo-excellence-state.v3",
   "repository": "GlacierEQ/spacex-launch-sequencer",
-  "principal_state": "FUNCTIONAL_LOCAL_COUNTDOWN_ORCHESTRATOR",
   "product_state": "FUNCTIONAL_LOCAL_COUNTDOWN_ORCHESTRATOR",
   "evidence_state": "EXACT_HEAD_VERIFIED",
   "projection_state": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
-  "target_state": "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE",
+  "target_state": "ACTIVE_FRONTIER",
+  "selection_state": "CURRENT_BEST_REVISABLE",
+  "selection_challengeable": true,
+  "capability_donor_preservation": true,
   "state_planes_ref": "machine/capability-planes.json",
   "verified_capability": "deterministic-local-countdown-orchestration",
   "evidence_token": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
@@ -18,30 +20,28 @@
   },
   "gates": {
     "IDENTITY_RESOLVED": {"status": "PASS", "evidence": "github GlacierEQ/spacex-launch-sequencer"},
-    "TARGET_CONTRACT_FROZEN": {"status": "PASS", "evidence": "machine/target-contract.json preserves target architecture separately from current proof"},
+    "CAPABILITY_GRAPH_BOUND": {"status": "PASS", "evidence": "machine/capability-planes.json uses APEX capability evolution v2"},
+    "SELECTION_CHALLENGEABLE": {"status": "PASS", "evidence": "current capability selections are CURRENT_BEST_REVISABLE"},
+    "DONOR_PRESERVATION_BOUND": {"status": "PASS", "evidence": "probabilistic research, Go timing, and integration scaffold mechanisms remain explicit donors"},
     "CENTRAL_MECHANISM_PRESENT": {"status": "PASS", "evidence": "Python countdown FSM and Go timer plus abort/retry/readiness machinery"},
     "DETERMINISTIC_PROOF_GREEN": {"status": "PASS", "evidence": "CI 31532650434 and Public Countdown Truth Gate 31532650465 on exact f931665de0d91b3a5a52748a30a76716d65bbe0a"},
     "ADVERSARIAL_SURVIVAL": {"status": "PASS", "evidence": "repository-owned hold retry callback reentrancy stale-timing and optional-failure regressions"},
     "OPERABLE_AND_OBSERVABLE": {"status": "PASS", "evidence": "scripts/operate.py and repository-native Python/Go verification"},
-    "PROOF_RECEIPT_BOUND": {"status": "PASS", "evidence": "exact-head GitHub Actions receipts are bound to evidence state"},
-    "AUTHORITY_BOUND": {"status": "PASS", "evidence": "local countdown simulation authority is explicitly not vehicle launch command or range authority"},
+    "PROOF_RECEIPT_BOUND": {"status": "PASS", "evidence": "exact-head workflow receipts are bound to evidence state"},
+    "SCOPE_BOUND": {"status": "PASS", "evidence": "scope is local countdown simulation and constrained-workflow research, not vehicle launch or range control"},
     "PROJECTION_TRUTH_CLOSED": {"status": "PASS", "evidence": "Public Countdown Truth Gate 31532650465"},
-    "CANONICAL_POSITION_RESOLVED": {"status": "PENDING", "evidence": "estate-level canonical position remains separately governed"},
-    "EVOLUTION_CURSOR_DEFINED": {"status": "PASS", "evidence": "advance preserved orchestration and research targets without replacing current exact-head evidence"}
+    "EVOLUTION_CURSOR_DEFINED": {"status": "PASS", "evidence": "advance policy composition, timing benchmarks, research challengers, services, and event integration while preserving proof and donors"}
   },
   "nonclaims": [
     "no SpaceX procedure knowledge or affiliation",
     "no vehicle launch or range command authority",
     "no sub-millisecond or production real-time guarantee",
     "no validated weather-window hold-risk or anomaly prediction",
-    "no live weather telemetry MCP provider APEX AKOS Mastermind or agent-mesh runtime integration",
+    "no live weather telemetry provider, APEX, AKOS, Mastermind, or agent-mesh runtime integration",
     "no production deployment or safety certification"
   ],
   "contract_ref": "machine/target-contract.json",
   "scores_ref": "machine/excellence-scores.json",
-  "evolution_cursor": "next:advance_preserved_countdown_target_architecture_without_projection_contamination",
-  "supersedes": {
-    "single_axis_principal_state": "TESTED",
-    "reason": "TESTED represented an evidence/projection checkpoint and incorrectly replaced product maturity and target state"
-  }
+  "evolution_cursor": "next:compare_policy_timing_and_research_challengers",
+  "recovery_rule": "preserve verified checkpoints, unique mechanisms, donors, and target commitments during improvement"
 }
