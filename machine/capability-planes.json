@@ -1,19 +1,20 @@
 {
-  "schema": "glaciereq.repository-capability-planes.v1",
+  "schema": "glaciereq.repository-capability-evolution.v2",
   "repository": "GlacierEQ/spacex-launch-sequencer",
-  "governance_authority": {
-    "repository": "GlacierEQ/AKOS",
-    "canonical_commit": "09660d20fe1cfe03de169ce327cbe0e86f054e63",
-    "contract": "governance/projection_non_interference.v1.json"
+  "apex": {
+    "contract": "GlacierEQ/AKOS/governance/apex_projection_evolution.v2.json@main",
+    "selection_mode": "CURRENT_BEST_REVISABLE",
+    "operator_objective_precedence": true,
+    "capability_donor_preservation": true
   },
   "provenance": {
     "pre_truth_hardening_head": "f817ae5d9005e4253fb547d98796ce81ced2b313",
     "truth_hardening_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
-    "current_parent_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+    "verified_parent_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
     "historical_intent_source": "README.md@f817ae5d9005e4253fb547d98796ce81ced2b313",
-    "rule": "historical launch-specific claims are not restored as current facts; transferable orchestration ambitions survive as explicitly non-authoritative target state"
+    "rule": "historical launch-specific claims are not restored as current facts; transferable orchestration ambitions survive as explicit target state"
   },
-  "canonical": {
+  "intent": {
     "identity": "deterministic countdown and constrained-workflow orchestration engineering laboratory",
     "original_intent": [
       "strictly ordered countdown and milestone execution",
@@ -22,7 +23,7 @@
       "timing and scheduling precision research",
       "predictive hold and anomaly-analysis extensions",
       "programmatic countdown status service",
-      "governed milestone-event publication"
+      "milestone-event publication"
     ],
     "non_affiliation": "independent GlacierEQ portfolio system; no SpaceX affiliation, proprietary launch procedure access, vehicle command authority, or launch authority"
   },
@@ -42,7 +43,7 @@
     "experimental_or_partial": [
       "probabilistic abort/hold analysis modules remain research surfaces rather than validated operational prediction",
       "mastermind_sidecar.py remains an integration scaffold rather than proof of live mesh connectivity",
-      "promotion-authority machinery is local governance logic, not launch authority"
+      "promotion machinery is local workflow logic, not launch authority"
     ],
     "source_paths": [
       "src/alpha/countdown.py",
@@ -56,39 +57,95 @@
   "evidence": {
     "evidence_token": "LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY",
     "verified_capability": "deterministic-local-countdown-orchestration",
-    "canonical_proof_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
+    "verified_checkpoint_head": "f931665de0d91b3a5a52748a30a76716d65bbe0a",
     "proof_receipts": [
       {"kind": "github_actions", "name": "CI", "id": 31532650434, "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a", "conclusion": "success"},
       {"kind": "github_actions", "name": "Public Countdown Truth Gate", "id": 31532650465, "head_sha": "f931665de0d91b3a5a52748a30a76716d65bbe0a", "conclusion": "success"}
     ],
-    "rule": "evidence defines current projection claimability; it does not replace canonical orchestration identity or future research targets"
+    "rule": "evidence constrains current projection claims while implementation, target, and research planes remain independently visible"
   },
+  "selection": {
+    "mode": "CURRENT_BEST_REVISABLE",
+    "challengeable": true,
+    "capabilities": [
+      {
+        "capability": "deterministic-local-countdown-orchestration",
+        "implementation_refs": ["src/alpha/countdown.py", "src/countdown_timer.go"],
+        "evidence_refs": ["LOCAL_COUNTDOWN_SIMULATION_NOT_LAUNCH_COMMAND_AUTHORITY", "github-actions:31532650434", "github-actions:31532650465"],
+        "reason": "strongest verified current composition for ordered local countdown execution",
+        "known_limits": ["synthetic readiness inputs", "no production real-time guarantee", "no launch command role"]
+      },
+      {
+        "capability": "hold-resume-and-abort-semantics",
+        "implementation_refs": ["src/alpha/countdown.py", "src/omega/abort_controller.py"],
+        "evidence_refs": ["github-actions:31532650434"],
+        "reason": "tested state-machine and fail-closed handling form the strongest current safety semantics"
+      },
+      {
+        "capability": "synthetic-readiness-voting",
+        "implementation_refs": ["src/alpha/countdown.py"],
+        "evidence_refs": ["github-actions:31532650434"],
+        "reason": "implemented local voting mechanism suitable as a base for broader policy composition"
+      },
+      {
+        "capability": "callback-failure-isolation",
+        "implementation_refs": ["src/alpha/countdown.py"],
+        "evidence_refs": ["github-actions:31532650434"],
+        "reason": "verified local mechanism with direct reliability value"
+      }
+    ],
+    "fitness_dimensions": [
+      "correctness", "capability_depth", "evidence_strength", "interoperability", "performance", "reliability", "maintainability", "human_legibility", "recency_relevance", "innovation_leverage", "composition_value", "recovery_cost"
+    ],
+    "reevaluate_on": [
+      "a generalized quorum or veto policy challenger gains stronger evidence",
+      "timing benchmarks expose a stronger scheduling route",
+      "probabilistic hold or anomaly research becomes reproducibly validated",
+      "the operator objective requires multi-subsystem orchestration",
+      "current evidence becomes stale or contradictory"
+    ]
+  },
+  "challengers": [
+    {"capability": "generalized-readiness-policy-composition", "state": "PARTIAL_CHALLENGER", "source_refs": ["src/alpha/countdown.py"], "promotion_requires": ["configurable policy model", "adversarial quorum tests", "failure semantics"]},
+    {"capability": "probabilistic-hold-analysis", "state": "RESEARCH_CHALLENGER", "source_refs": ["src/omega/probabilistic_abort.py"], "promotion_requires": ["labeled benchmark", "calibration", "error analysis"]},
+    {"capability": "programmatic-countdown-status-service", "state": "TARGET_CHALLENGER", "source_refs": ["mastermind_sidecar.py"], "promotion_requires": ["implemented service boundary", "integration tests", "live receipt"]}
+  ],
+  "capability_donors": [
+    {"source": "src/omega/probabilistic_abort.py", "unique_value": ["probabilistic abort/hold research mechanisms"], "preserve": true},
+    {"source": "mastermind_sidecar.py", "unique_value": ["integration scaffold for future event publication and programmatic status"], "preserve": true},
+    {"source": "src/countdown_timer.go", "unique_value": ["cross-language timing implementation boundary"], "preserve": true}
+  ],
   "projection": {
     "public_claim_ceiling": "local deterministic countdown simulation and constrained-workflow orchestration with synthetic readiness voting, holds, retries, ordered milestones and fail-closed abort behavior",
     "public_readme": "README.md",
     "projection_may_omit_unverified_target_state": true,
-    "projection_may_overwrite_canonical_or_target": false,
+    "projection_may_overwrite_intent_or_target": false,
     "nonclaims": [
       "no SpaceX procedure knowledge or affiliation",
       "no vehicle launch or range command authority",
       "no sub-millisecond or production real-time guarantee",
       "no validated weather-window hold-risk or anomaly prediction",
-      "no live weather telemetry MCP provider APEX AKOS Mastermind or agent-mesh runtime integration",
+      "no live weather telemetry provider, APEX, AKOS, Mastermind, or agent-mesh runtime integration",
       "no production deployment or safety certification"
     ]
   },
   "target": {
-    "status": "PRESERVED_UNVERIFIED_TARGET_ARCHITECTURE",
+    "status": "ACTIVE_FRONTIER",
     "items": [
-      {"capability": "larger multi-subsystem countdown orchestration", "origin": "historical README", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "current synthetic voting and milestone engine is a base; broader subsystem orchestration remains a target"},
+      {"capability": "larger multi-subsystem countdown orchestration", "origin": "historical README", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "current voting and milestone engine is a base; broader subsystem orchestration remains a target"},
       {"capability": "configurable go-no-go consensus quorum and veto policies", "origin": "historical README", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "current synthetic readiness model is a base; generalized policy composition remains a target"},
-      {"capability": "timing-jitter and real-time scheduling benchmark research", "origin": "historical sub-millisecond claim", "state": "UNVERIFIED_TARGET", "note": "historical sub-millisecond guarantee is not restored; reproducible jitter benchmarking is the proper target"},
-      {"capability": "weather-window optimization research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future research target using reproducible public or synthetic forecast data"},
-      {"capability": "hold-risk prediction research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future benchmarked classification target; no current probability claim"},
+      {"capability": "timing-jitter and real-time scheduling benchmark research", "origin": "historical performance claim", "state": "UNVERIFIED_TARGET", "note": "reproducible jitter benchmarking replaces unsupported guarantees"},
+      {"capability": "weather-window optimization research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future reproducible research target"},
+      {"capability": "hold-risk prediction research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future benchmarked classification target"},
       {"capability": "countdown anomaly-detection research", "origin": "historical AI extension", "state": "UNVERIFIED_TARGET", "note": "future reproducible anomaly-analysis target"},
-      {"capability": "programmatic countdown-status service", "origin": "historical MCP tool intent", "state": "UNVERIFIED_TARGET", "note": "generic governed service target; no current live MCP integration"},
-      {"capability": "governed milestone-event publication into an orchestration mesh", "origin": "historical Mastermind/APEX intent", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "sidecar scaffold exists, but live mesh connectivity remains unverified target state"}
+      {"capability": "programmatic countdown-status service", "origin": "historical service intent", "state": "UNVERIFIED_TARGET", "note": "service target; no current live integration"},
+      {"capability": "milestone-event publication into an orchestration mesh", "origin": "historical mesh intent", "state": "PARTIALLY_IMPLEMENTED_TARGET", "note": "sidecar scaffold exists, but live connectivity remains unverified"}
     ],
-    "rule": "targets advance only through implementation and evidence; lack of proof may narrow projection but may not erase the target"
+    "rule": "targets remain visible until realized, replaced by a stronger objective, or explicitly retired with capability-loss accounting"
+  },
+  "lineage": {
+    "verified_checkpoints": ["f931665de0d91b3a5a52748a30a76716d65bbe0a"],
+    "migration": {"from": "retired freeze-oriented projection model", "to": "APEX capability evolution graph", "status": "complete"},
+    "recovery_rule": "preserve unique mechanisms, proof receipts, target commitments, and rollback evidence before replacement or retirement"
   }
 }
