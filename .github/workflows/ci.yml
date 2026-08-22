@@ -34,3 +34,11 @@ jobs:
       - name: Verify repository-owned mixed-language surface
         shell: bash
         run: bash scripts/ci/verify.sh
+
+      - name: Upload verification receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spacex-launch-sequence-${{ github.sha }}
+          path: .verification-artifacts/
+          if-no-files-found: error
